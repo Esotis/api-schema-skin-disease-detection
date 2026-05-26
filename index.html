@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SkinSense API — Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --surface2: #1a1e28;
+    --border: #252a38;
+    --accent: #f0803c;
+    --accent2: #e8b86d;
+    --green: #4ade80;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --purple: #c084fc;
+    --yellow: #fbbf24;
+    --text: #e8eaf0;
+    --muted: #7a8099;
+    --muted2: #4a5068;
+    --code-bg: #0a0c10;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    width: 270px;
+    min-height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0;
+    overflow-y: auto;
+    padding-bottom: 40px;
+    z-index: 100;
+  }
+  .sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+    background: var(--surface);
+    z-index: 10;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--text);
+    letter-spacing: -0.5px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .version-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+    background: rgba(240,128,60,0.1);
+    border: 1px solid rgba(240,128,60,0.25);
+    border-radius: 4px;
+    padding: 2px 8px;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .nav-section {
+    padding: 20px 16px 4px;
+  }
+  .nav-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted2);
+    padding: 0 8px;
+    margin-bottom: 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 400;
+    transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .nav-item:hover { color: var(--text); background: var(--surface2); }
+  .nav-item.active { color: var(--accent); background: rgba(240,128,60,0.08); font-weight: 500; }
+  .method-dot {
+    width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  }
+  .dot-get { background: var(--green); }
+  .dot-post { background: var(--accent); }
+  .dot-put { background: var(--yellow); }
+  .dot-delete { background: var(--red); }
+
+  /* ─── MAIN ─── */
+  .main {
+    margin-left: 270px;
+    flex: 1;
+    padding: 0 0 80px;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 52px 60px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(240,128,60,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, var(--text) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 580px;
+    margin-bottom: 28px;
+  }
+  .hero-meta {
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .meta-chip {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .meta-chip strong { color: var(--text); font-weight: 500; }
+  .meta-chip .ico { font-size: 14px; }
+
+  /* ─── CONTENT WRAPPER ─── */
+  .content {
+    padding: 0 60px;
+    max-width: 960px;
+  }
+
+  /* ─── SECTION ─── */
+  .section {
+    padding-top: 56px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-icon {
+    width: 32px; height: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+  .section-desc {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 28px;
+    margin-top: 12px;
+  }
+
+  /* ─── AUTH INFO BOX ─── */
+  .info-box {
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    display: flex; gap: 14px;
+    border: 1px solid;
+  }
+  .info-box.warning {
+    background: rgba(251,191,36,0.05);
+    border-color: rgba(251,191,36,0.2);
+  }
+  .info-box.info {
+    background: rgba(96,165,250,0.05);
+    border-color: rgba(96,165,250,0.2);
+  }
+  .info-box.tip {
+    background: rgba(74,222,128,0.05);
+    border-color: rgba(74,222,128,0.2);
+  }
+  .info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-title { font-weight: 600; font-size: 13.5px; margin-bottom: 4px; }
+  .info-box.warning .info-title { color: var(--yellow); }
+  .info-box.info .info-title { color: var(--blue); }
+  .info-box.tip .info-title { color: var(--green); }
+  .info-text { color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .info-text code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: rgba(255,255,255,0.07);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+
+  /* ─── API ENDPOINT CARD ─── */
+  .endpoint-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .endpoint-card:hover { border-color: var(--muted2); }
+
+  .endpoint-header {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .endpoint-header:hover { background: var(--surface2); }
+
+  .method-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 5px;
+    min-width: 62px;
+    text-align: center;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .badge-get { background: rgba(74,222,128,0.12); color: var(--green); border: 1px solid rgba(74,222,128,0.25); }
+  .badge-post { background: rgba(240,128,60,0.12); color: var(--accent); border: 1px solid rgba(240,128,60,0.25); }
+  .badge-put { background: rgba(251,191,36,0.12); color: var(--yellow); border: 1px solid rgba(251,191,36,0.25); }
+  .badge-delete { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+
+  .endpoint-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text);
+    flex: 1;
+  }
+  .endpoint-path .param { color: var(--accent2); }
+
+  .endpoint-summary {
+    font-size: 13px;
+    color: var(--muted);
+    flex: 1;
+  }
+
+  .auth-tag {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .auth-required { background: rgba(192,132,252,0.1); color: var(--purple); border: 1px solid rgba(192,132,252,0.2); }
+  .auth-optional { background: rgba(96,165,250,0.1); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+  .auth-none { background: rgba(122,128,153,0.1); color: var(--muted); border: 1px solid var(--border); }
+
+  .chevron {
+    color: var(--muted2);
+    font-size: 12px;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .endpoint-card.open .chevron { transform: rotate(180deg); }
+
+  .endpoint-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 24px;
+  }
+  .endpoint-card.open .endpoint-body { display: block; }
+
+  /* ─── BODY SECTIONS ─── */
+  .body-section { margin-bottom: 24px; }
+  .body-section:last-child { margin-bottom: 0; }
+  .body-label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted2);
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .body-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── PARAMS TABLE ─── */
+  .params-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .params-table thead tr {
+    background: var(--surface2);
+  }
+  .params-table th {
+    text-align: left;
+    padding: 8px 14px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--muted2);
+    border-bottom: 1px solid var(--border);
+    font-weight: 500;
+  }
+  .params-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(37,42,56,0.5);
+    vertical-align: top;
+    color: var(--muted);
+  }
+  .params-table tr:last-child td { border-bottom: none; }
+  .params-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+  .param-name {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .param-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue);
+  }
+  .required-badge {
+    font-size: 10px;
+    background: rgba(248,113,113,0.1);
+    color: var(--red);
+    border: 1px solid rgba(248,113,113,0.2);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .optional-badge {
+    font-size: 10px;
+    background: rgba(122,128,153,0.1);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ─── CODE BLOCK ─── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--muted2); }
+  .copy-btn.copied { color: var(--green); border-color: rgba(74,222,128,0.3); }
+  pre {
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .s { color: #98c379; } /* string */
+  .n { color: #e5c07b; } /* number */
+  .k { color: var(--accent); } /* key */
+  .b { color: #56b6c2; } /* boolean/null */
+  .c { color: var(--muted2); } /* comment */
+  .p { color: var(--accent2); } /* path param */
+  .h { color: var(--blue); }  /* header */
+
+  /* ─── RESPONSE TABS ─── */
+  .response-tabs {
+    display: flex; gap: 4px;
+    margin-bottom: 12px;
+  }
+  .resp-tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    padding: 4px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: none;
+    color: var(--muted);
+    transition: all 0.15s;
+  }
+  .resp-tab.active-2xx { background: rgba(74,222,128,0.1); border-color: rgba(74,222,128,0.3); color: var(--green); }
+  .resp-tab.active-4xx { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: var(--red); }
+
+  /* ─── BASE URL BOX ─── */
+  .base-url-box {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .base-url-label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+  .base-url-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--accent2);
+  }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted2); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .content, .hero { padding-left: 24px; padding-right: 24px; }
+  }
+
+  /* ─── ANIMATIONS ─── */
+  .endpoint-card { animation: fadeUp 0.3s ease both; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── FLOW TABLE ─── */
+  .flow-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .flow-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .flow-title {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .flow-desc { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .flow-code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--accent2);
+    background: rgba(255,255,255,0.05);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 40px 0;
+  }
+
+  /* group header */
+  .endpoint-group-label {
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted2);
+    margin: 28px 0 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .endpoint-group-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SIDEBAR
+══════════════════════════════════════════════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <span class="logo-icon">🩺</span>
+      SkinSense API
+    </div>
+    <div class="version-badge"><span class="dot"></span> v1.0 · Live</div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <a class="nav-item active" href="#overview">📖 Introduction</a>
+    <a class="nav-item" href="#auth-overview">🔐 Authentication</a>
+    <a class="nav-item" href="#base-url">🌐 Base URL</a>
+    <a class="nav-item" href="#response-format">📦 Response Format</a>
+    <a class="nav-item" href="#errors">⚠️ Error Codes</a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Auth</div>
+    <a class="nav-item" href="#auth-google">
+      <span class="method-dot dot-post"></span> POST /google
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Detection</div>
+    <a class="nav-item" href="#det-create">
+      <span class="method-dot dot-post"></span> POST /detection
+    </a>
+    <a class="nav-item" href="#det-get">
+      <span class="method-dot dot-get"></span> GET /detection
+    </a>
+    <a class="nav-item" href="#det-ai">
+      <span class="method-dot dot-post"></span> POST /recommendation
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Forum — Posts</div>
+    <a class="nav-item" href="#post-create">
+      <span class="method-dot dot-post"></span> POST /posts
+    </a>
+    <a class="nav-item" href="#post-all">
+      <span class="method-dot dot-get"></span> GET /posts
+    </a>
+    <a class="nav-item" href="#post-search">
+      <span class="method-dot dot-get"></span> GET /posts/search
+    </a>
+    <a class="nav-item" href="#post-me">
+      <span class="method-dot dot-get"></span> GET /posts/me
+    </a>
+    <a class="nav-item" href="#post-id">
+      <span class="method-dot dot-get"></span> GET /posts/:id
+    </a>
+    <a class="nav-item" href="#post-update">
+      <span class="method-dot dot-put"></span> PUT /posts/:id
+    </a>
+    <a class="nav-item" href="#post-delete">
+      <span class="method-dot dot-delete"></span> DELETE /posts/:id
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Forum — Comments</div>
+    <a class="nav-item" href="#cmt-create">
+      <span class="method-dot dot-post"></span> POST /comments
+    </a>
+    <a class="nav-item" href="#cmt-get">
+      <span class="method-dot dot-get"></span> GET /comments
+    </a>
+    <a class="nav-item" href="#cmt-update">
+      <span class="method-dot dot-put"></span> PUT /comments/:id
+    </a>
+    <a class="nav-item" href="#cmt-delete">
+      <span class="method-dot dot-delete"></span> DELETE /comments/:id
+    </a>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Forum — Votes</div>
+    <a class="nav-item" href="#vote">
+      <span class="method-dot dot-post"></span> POST /vote
+    </a>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>SkinSense API Documentation</h1>
+    <p class="hero-sub">Referensi lengkap REST API untuk sistem deteksi penyakit kulit berbasis AI — mencakup autentikasi, deteksi, rekomendasi AI, dan forum komunitas.</p>
+    <div class="hero-meta">
+      <div class="meta-chip"><span class="ico">🌐</span> <strong>REST</strong> / JSON</div>
+      <div class="meta-chip"><span class="ico">🔥</span> Backend: <strong>Node.js + Express</strong></div>
+      <div class="meta-chip"><span class="ico">🗄️</span> Database: <strong>Firestore</strong></div>
+      <div class="meta-chip"><span class="ico">🖼️</span> Storage: <strong>Cloudinary</strong></div>
+      <div class="meta-chip"><span class="ico">🤖</span> AI: <strong>Gemini 3.5</strong></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════
+         OVERVIEW
+    ══════════════════════════════ -->
+    <div class="section" id="overview">
+      <div class="section-title">
+        <span class="section-icon">📖</span>
+        Introduction
+      </div>
+      <p class="section-desc">
+        API ini adalah backend untuk aplikasi <strong>SkinSense</strong> — sebuah platform deteksi penyakit kulit berbasis AI yang dilengkapi fitur forum komunitas. Seluruh endpoint menggunakan format JSON dan mengikuti konvensi REST standard.
+      </p>
+
+      <div id="base-url" class="base-url-box">
+        <span class="base-url-label">Base URL (Dev)</span>
+        <span class="base-url-value">http://localhost:3000</span>
+      </div>
+      <div class="base-url-box" style="margin-bottom:0">
+        <span class="base-url-label">Base URL (Prod)</span>
+        <span class="base-url-value">https://&lt;your-domain&gt;</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ══════════════════════════════
+         AUTH OVERVIEW
+    ══════════════════════════════ -->
+    <div class="section" id="auth-overview">
+      <div class="section-title">
+        <span class="section-icon">🔐</span>
+        Authentication
+      </div>
+      <p class="section-desc">
+        API menggunakan dua jenis middleware autentikasi: <strong>requireAuth</strong> dan <strong>optionalAuth</strong>. Keduanya mengharapkan header <code>Authorization: Bearer &lt;token&gt;</code>.
+      </p>
+
+      <div class="flow-grid">
+        <div class="flow-card">
+          <div class="flow-title">🔒 requireAuth</div>
+          <div class="flow-desc">Wajib login. Hanya menerima Firebase ID Token yang valid. Digunakan pada endpoint yang membutuhkan identitas penuh (buat post, buat komentar, dll).</div>
+        </div>
+        <div class="flow-card">
+          <div class="flow-title">🔓 optionalAuth</div>
+          <div class="flow-desc">Mendukung dua jenis token: Firebase ID Token (user login) atau Guest Token yang diawali kata <span class="flow-code">guest</span> (contoh: <span class="flow-code">guest_abcd1234</span>). Digunakan pada deteksi dan baca forum.</div>
+        </div>
+      </div>
+
+      <div class="info-box warning">
+        <span class="info-icon">💡</span>
+        <div>
+          <div class="info-title">Cara mendapatkan Firebase ID Token</div>
+          <div class="info-text">
+            Di Flutter/Android/iOS, gunakan <code>FirebaseAuth.instance.currentUser?.getIdToken()</code>. Token berlaku selama 1 jam dan harus di-refresh secara periodik. Untuk guest user, gunakan token string unik yang diawali <code>guest</code> (misalnya UUID yang di-prefix).
+          </div>
+        </div>
+      </div>
+
+      <div class="info-box info">
+        <span class="info-icon">ℹ️</span>
+        <div>
+          <div class="info-title">Format Header Authorization</div>
+          <div class="info-text">
+            Semua request yang membutuhkan autentikasi harus menyertakan header:<br/>
+            <code>Authorization: Bearer &lt;firebase_id_token_atau_guest_token&gt;</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ══════════════════════════════
+         RESPONSE FORMAT
+    ══════════════════════════════ -->
+    <div id="response-format" class="section" style="padding-top: 0;">
+      <div class="section-title">
+        <span class="section-icon">📦</span>
+        Response Format
+      </div>
+      <p class="section-desc">Semua response dari API menggunakan format JSON yang konsisten seperti berikut:</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">JSON · Standard Envelope</span>
+        </div>
+        <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,            <span class="c">// HTTP status code</span>
+  <span class="k">"status"</span>: <span class="s">"success"</span>,    <span class="c">// "success" jika code &lt; 400, "failed" jika &gt;= 400</span>
+  <span class="k">"message"</span>: <span class="s">"..."</span>,      <span class="c">// Pesan deskriptif dalam Bahasa Indonesia</span>
+  <span class="k">"data"</span>: <span class="b">null</span> | {} | [] <span class="c">// Payload data (null jika tidak ada data)</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ERROR CODES -->
+    <div id="errors" class="section" style="padding-top: 0;">
+      <div class="section-title">
+        <span class="section-icon">⚠️</span>
+        Error Codes
+      </div>
+      <table class="params-table">
+        <thead><tr><th>Status Code</th><th>Status Text</th><th>Penyebab Umum</th></tr></thead>
+        <tbody>
+          <tr><td><span class="param-name" style="color:var(--green)">200</span></td><td><span class="param-type">OK</span></td><td>Request berhasil</td></tr>
+          <tr><td><span class="param-name" style="color:var(--green)">201</span></td><td><span class="param-type">Created</span></td><td>Resource berhasil dibuat</td></tr>
+          <tr><td><span class="param-name" style="color:var(--yellow)">400</span></td><td><span class="param-type">Bad Request</span></td><td>Validasi body/query gagal (Joi schema)</td></tr>
+          <tr><td><span class="param-name" style="color:var(--red)">401</span></td><td><span class="param-type">Unauthorized</span></td><td>Token tidak ada, format salah, atau sudah expired</td></tr>
+          <tr><td><span class="param-name" style="color:var(--red)">403</span></td><td><span class="param-type">Forbidden</span></td><td>User mencoba edit/hapus resource milik user lain</td></tr>
+          <tr><td><span class="param-name" style="color:var(--red)">404</span></td><td><span class="param-type">Not Found</span></td><td>Resource (post, komentar) tidak ditemukan</td></tr>
+          <tr><td><span class="param-name" style="color:var(--red)">500</span></td><td><span class="param-type">Internal Server Error</span></td><td>Error tidak terduga di server</td></tr>
+        </tbody>
+      </table>
+      <div class="code-block" style="margin-top:14px">
+        <div class="code-header"><span class="code-lang">JSON · Contoh Error Response</span></div>
+        <pre>{
+  <span class="k">"code"</span>: <span class="n">401</span>,
+  <span class="k">"status"</span>: <span class="s">"failed"</span>,
+  <span class="k">"message"</span>: <span class="s">"Token tidak valid atau sudah kedaluwarsa"</span>,
+  <span class="k">"data"</span>: <span class="b">undefined</span>
+}</pre>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         AUTH SERVICE
+    ══════════════════════════════════════════════════════════ -->
+    <div class="section" id="auth-google">
+      <div class="section-title">
+        <span class="section-icon">🔑</span>
+        Auth Service
+      </div>
+      <p class="section-desc">Endpoint untuk autentikasi pengguna melalui Google OAuth via Firebase.</p>
+
+      <!-- POST /auth/google -->
+      <div class="endpoint-card" id="card-auth-google">
+        <div class="endpoint-header" onclick="toggleCard('card-auth-google')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="endpoint-path">/auth/google</span>
+          <span class="endpoint-summary">Login atau daftar menggunakan Google Account</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Deskripsi</div>
+            <p style="font-size:13.5px;color:var(--muted);line-height:1.6">
+              Endpoint ini digunakan saat user login pertama kali dengan Google. Jika user sudah terdaftar, akan mengembalikan data user yang ada. Jika belum, akan membuat akun baru di Firestore. Token Firebase harus dikirim di header Authorization.
+            </p>
+          </div>
+
+          <div class="body-section">
+            <div class="body-label">Request Headers</div>
+            <table class="params-table">
+              <thead><tr><th>Header</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr><td><span class="param-name">Authorization</span></td><td><span class="param-type">string</span></td><td>Bearer &lt;firebase_id_token&gt; <span class="required-badge">required</span></td></tr>
+                <tr><td><span class="param-name">Content-Type</span></td><td><span class="param-type">string</span></td><td>application/json</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="body-section">
+            <div class="body-label">Request Body</div>
+            <div class="info-box tip" style="margin-bottom:0">
+              <span class="info-icon">✅</span>
+              <div class="info-text">Endpoint ini <strong>tidak memerlukan body</strong>. Semua data user (uid, email, name, picture) diambil langsung dari Firebase ID Token yang sudah diverifikasi.</div>
+            </div>
+          </div>
+
+          <div class="body-section">
+            <div class="body-label">Response</div>
+            <div class="response-tabs">
+              <button class="resp-tab active-2xx" onclick="showTab(this,'tab-ag-201')">201 Created</button>
+              <button class="resp-tab" onclick="showTab(this,'tab-ag-200')" style="border-color:rgba(74,222,128,0.3);color:var(--green)">200 OK (existing user)</button>
+              <button class="resp-tab" onclick="showTab(this,'tab-ag-401')">401 Unauthorized</button>
+            </div>
+            <div id="tab-ag-201" class="code-block">
+              <div class="code-header"><span class="code-lang">JSON · 201 Akun Berhasil Dibuat</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">201</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Akun berhasil dibuat"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>: <span class="s">"KMwMziV7NTYAvK5lvFseTWykOp1"</span>,
+    <span class="k">"uid"</span>: <span class="s">"KMwMziV7NTYAvK5lvFseTWykOp1"</span>,
+    <span class="k">"displayName"</span>: <span class="s">"Najwa Zakia"</span>,
+    <span class="k">"email"</span>: <span class="s">"najwa@gmail.com"</span>,
+    <span class="k">"photoURL"</span>: <span class="s">"https://lh3.googleusercontent.com/a/..."</span>,
+    <span class="k">"gender"</span>: <span class="b">null</span>,
+    <span class="k">"dateBirth"</span>: <span class="b">null</span>,
+    <span class="k">"bio"</span>: <span class="b">null</span>,
+    <span class="k">"is_anonymous"</span>: <span class="b">false</span>,
+    <span class="k">"totalDetections"</span>: <span class="n">0</span>,
+    <span class="k">"totalPosts"</span>: <span class="n">0</span>,
+    <span class="k">"createdAt"</span>: <span class="b">null</span>,
+    <span class="k">"updatedAt"</span>: <span class="b">null</span>
+  }
+}</pre>
+            </div>
+            <div id="tab-ag-200" class="code-block" style="display:none">
+              <div class="code-header"><span class="code-lang">JSON · 200 Berhasil Login (User Sudah Ada)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil login"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>: <span class="s">"KMwMziV7NTYAvK5lvFseTWykOp1"</span>,
+    <span class="k">"uid"</span>: <span class="s">"KMwMziV7NTYAvK5lvFseTWykOp1"</span>,
+    <span class="k">"displayName"</span>: <span class="s">"Najwa Zakia"</span>,
+    <span class="k">"email"</span>: <span class="s">"najwa@gmail.com"</span>,
+    <span class="k">"photoURL"</span>: <span class="s">"https://lh3.googleusercontent.com/a/..."</span>,
+    <span class="k">"gender"</span>: <span class="s">"Male"</span>,
+    <span class="k">"dateBirth"</span>: <span class="s">"2004-01-29T00:00:00.000Z"</span>,
+    <span class="k">"bio"</span>: <span class="s">"Halo, saya sedang fokus pada kesehatan kulit saya."</span>,
+    <span class="k">"is_anonymous"</span>: <span class="b">false</span>,
+    <span class="k">"totalDetections"</span>: <span class="n">12</span>,
+    <span class="k">"totalPosts"</span>: <span class="n">3</span>,
+    <span class="k">"createdAt"</span>: <span class="s">"2025-01-15T08:22:10.000Z"</span>,
+    <span class="k">"updatedAt"</span>: <span class="s">"2025-05-20T14:05:30.000Z"</span>
+  }
+}</pre>
+            </div>
+            <div id="tab-ag-401" class="code-block" style="display:none">
+              <div class="code-header"><span class="code-lang">JSON · 401 Token Tidak Valid</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">401</span>,
+  <span class="k">"status"</span>: <span class="s">"failed"</span>,
+  <span class="k">"message"</span>: <span class="s">"Token tidak valid atau sudah kedaluwarsa"</span>
+}</pre>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         DETECTION SERVICE
+    ══════════════════════════════════════════════════════════ -->
+    <div class="section" id="det-create">
+      <div class="section-title">
+        <span class="section-icon">🔬</span>
+        Detection Service
+      </div>
+      <p class="section-desc">
+        Endpoint untuk deteksi penyakit kulit dan riwayat deteksi. Semua endpoint detection menggunakan <strong>optionalAuth</strong> — mendukung user login maupun guest.
+      </p>
+
+      <div class="info-box info">
+        <span class="info-icon">ℹ️</span>
+        <div>
+          <div class="info-title">Alur Upload Gambar</div>
+          <div class="info-text">
+            Frontend harus upload gambar ke <strong>Cloudinary terlebih dahulu</strong>, kemudian mengirimkan <code>image_URL</code> dan <code>cloudinary_public_id</code> hasil upload ke endpoint deteksi ini. Server tidak menerima file binary secara langsung.
+          </div>
+        </div>
+      </div>
+
+      <!-- POST /detection -->
+      <div class="endpoint-card" id="card-det-create">
+        <div class="endpoint-header" onclick="toggleCard('card-det-create')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="endpoint-path">/detection</span>
+          <span class="endpoint-summary">Buat deteksi baru, jalankan AI model</span>
+          <span class="auth-tag auth-optional">optionalAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Request Body (application/json)</div>
+            <table class="params-table">
+              <thead><tr><th>Field</th><th>Tipe</th><th>Validasi</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">image_URL</span></td>
+                  <td><span class="param-type">string</span></td>
+                  <td><span class="required-badge">required</span></td>
+                  <td>URL gambar hasil upload ke Cloudinary (harus valid URI)</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">cloudinary_public_id</span></td>
+                  <td><span class="param-type">string</span></td>
+                  <td><span class="required-badge">required</span></td>
+                  <td>Public ID dari Cloudinary untuk keperluan hapus gambar</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Request Example</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"image_URL"</span>: <span class="s">"https://res.cloudinary.com/coffins/image/upload/v1778927926/main-sample.png"</span>,
+  <span class="k">"cloudinary_public_id"</span>: <span class="s">"i1829a"</span>
+}</pre>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 201 Deteksi Berhasil</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">201</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Deteksi berhasil"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>: <span class="s">"auto_generated_doc_id_A"</span>,
+    <span class="k">"label"</span>: <span class="s">"Acne"</span>,
+    <span class="k">"confidence"</span>: <span class="n">91.5</span>,
+    <span class="k">"image_URL"</span>: <span class="s">"https://res.cloudinary.com/coffins/image/upload/v1778927926/main-sample.png"</span>,
+    <span class="k">"is_anonymous"</span>: <span class="b">false</span>,
+    <span class="k">"createdAt"</span>: <span class="b">null</span>
+  }
+}</pre>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Catatan Penting</div>
+            <div class="info-box warning" style="margin-bottom:0">
+              <span class="info-icon">⚙️</span>
+              <div>
+                <div class="info-title">AI Model (Simulasi)</div>
+                <div class="info-text">
+                  Saat ini AI model masih berupa <strong>simulasi (dummy)</strong> dengan delay 2 detik yang selalu mengembalikan label <code>"Acne"</code> confidence <code>91.5</code>. Field <code>createdAt</code> akan bernilai <code>null</code> pada response langsung karena Firebase Server Timestamp baru ter-resolve setelah commit.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /detection -->
+      <div class="endpoint-card" id="card-det-get">
+        <div class="endpoint-header" onclick="toggleCard('card-det-get')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="endpoint-path">/detection</span>
+          <span class="endpoint-summary">Ambil riwayat deteksi milik user saat ini</span>
+          <span class="auth-tag auth-optional">optionalAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Deskripsi</div>
+            <p style="font-size:13.5px;color:var(--muted)">Mengambil semua riwayat deteksi berdasarkan <code>uid</code> dari token. Diurutkan dari terbaru. Field sensitif (<code>user_uid</code>, <code>cloudinary_public_id</code>) disembunyikan dari response.</p>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil mengambil riwayat deteksi"</span>,
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>: <span class="s">"auto_generated_doc_id_A"</span>,
+      <span class="k">"label"</span>: <span class="s">"Acne"</span>,
+      <span class="k">"confidence"</span>: <span class="n">0.94</span>,
+      <span class="k">"image_URL"</span>: <span class="s">"https://res.cloudinary.com/coffins/image/upload/v1778927926/main-sample.png"</span>,
+      <span class="k">"is_anonymous"</span>: <span class="b">false</span>,
+      <span class="k">"createdAt"</span>: <span class="s">"2025-05-20T10:00:00.000Z"</span>
+    }
+  ]
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- POST /detection/recommendation -->
+      <div class="endpoint-card" id="card-det-ai">
+        <div class="endpoint-header" onclick="toggleCard('card-det-ai')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="endpoint-path">/detection/recommendation</span>
+          <span class="endpoint-summary">Dapatkan rekomendasi AI dari hasil deteksi</span>
+          <span class="auth-tag auth-optional">optionalAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Deskripsi</div>
+            <p style="font-size:13.5px;color:var(--muted)">Mengirimkan satu atau lebih hasil deteksi ke <strong>Gemini AI</strong> untuk mendapatkan rekomendasi penanganan, deskripsi penyakit, saran obat bebas, dan peringatan medis. Bisa digunakan setelah deteksi berhasil.</p>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Request Body (application/json)</div>
+            <table class="params-table">
+              <thead><tr><th>Field</th><th>Tipe</th><th>Validasi</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">detections</span></td>
+                  <td><span class="param-type">array</span></td>
+                  <td><span class="required-badge">required</span> min 1 item</td>
+                  <td>Array objek hasil deteksi</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">detections[].label</span></td>
+                  <td><span class="param-type">string</span></td>
+                  <td><span class="required-badge">required</span></td>
+                  <td>Nama label penyakit kulit (contoh: "Acne")</td>
+                </tr>
+                <tr>
+                  <td><span class="param-name">detections[].confidence</span></td>
+                  <td><span class="param-type">number</span></td>
+                  <td><span class="required-badge">required</span> 0–100</td>
+                  <td>Persentase kepercayaan model AI (0 - 100)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Request Example</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"detections"</span>: [
+    { <span class="k">"label"</span>: <span class="s">"Acne"</span>, <span class="k">"confidence"</span>: <span class="n">91.5</span> }
+  ]
+}</pre>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil mendapatkan rekomendasi AI"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"deskripsi"</span>: <span class="s">"Acne (jerawat) merupakan kondisi kulit yang terjadi ketika folikel rambut tersumbat oleh minyak dan sel kulit mati, menyebabkan munculnya komedo, papula, atau pustula."</span>,
+    <span class="k">"penanganan"</span>: <span class="s">"Bersihkan wajah dua kali sehari dengan pembersih lembut, hindari memencet jerawat, gunakan produk non-komedogenik, dan jaga kelembapan kulit."</span>,
+    <span class="k">"obat_bebas"</span>: <span class="s">"Benzoyl peroxide 2.5–5%, salicylic acid 0.5–2%, atau adapalene 0.1% yang tersedia tanpa resep."</span>,
+    <span class="k">"peringatan"</span>: <span class="s">"Jika jerawat parah, meradang luas, atau tidak membaik dalam 6–8 minggu, segera konsultasikan ke dokter kulit."</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         FORUM — POSTS
+    ══════════════════════════════════════════════════════════ -->
+    <div class="section" id="post-create">
+      <div class="section-title">
+        <span class="section-icon">📋</span>
+        Forum — Posts
+      </div>
+      <p class="section-desc">Endpoint untuk membuat, membaca, mengupdate, dan menghapus postingan forum komunitas.</p>
+
+      <!-- POST /forum/posts -->
+      <div class="endpoint-card" id="card-post-create">
+        <div class="endpoint-header" onclick="toggleCard('card-post-create')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="endpoint-path">/forum/posts</span>
+          <span class="endpoint-summary">Buat postingan baru di forum</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Request Body (application/json)</div>
+            <table class="params-table">
+              <thead><tr><th>Field</th><th>Tipe</th><th>Validasi</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td><span class="required-badge">required</span> min 5, max 100</td><td>Judul postingan</td></tr>
+                <tr><td><span class="param-name">content</span></td><td><span class="param-type">string</span></td><td><span class="required-badge">required</span> min 10</td><td>Isi konten postingan</td></tr>
+                <tr><td><span class="param-name">tags</span></td><td><span class="param-type">string[]</span></td><td><span class="required-badge">required</span> max 5 tag</td><td>Array tag topik (contoh: ["Acne", "Tips"])</td></tr>
+                <tr><td><span class="param-name">image_URL</span></td><td><span class="param-type">string</span></td><td><span class="optional-badge">optional</span></td><td>URL gambar dari Cloudinary (nullable)</td></tr>
+                <tr><td><span class="param-name">cloudinary_public_id</span></td><td><span class="param-type">string</span></td><td><span class="optional-badge">optional</span></td><td>Public ID Cloudinary (nullable)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Request Example</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"title"</span>: <span class="s">"Bagaimana cara meredakan jerawat meradang?"</span>,
+  <span class="k">"content"</span>: <span class="s">"Saya sudah mencoba berbagai cara tapi masih merah dan perih. Ada saran?"</span>,
+  <span class="k">"tags"</span>: [<span class="s">"Acne"</span>, <span class="s">"Tips"</span>, <span class="s">"Skincare"</span>],
+  <span class="k">"image_URL"</span>: <span class="s">"https://res.cloudinary.com/coffins/image/upload/v1778927926/main-sample.png"</span>,
+  <span class="k">"cloudinary_public_id"</span>: <span class="s">"ka91ms"</span>
+}</pre>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 201 Created</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">201</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Postingan berhasil dibuat"</span>,
+  <span class="k">"data"</span>: <span class="b">undefined</span>   <span class="c">// Tidak mengembalikan data post</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /forum/posts -->
+      <div class="endpoint-card" id="card-post-all">
+        <div class="endpoint-header" onclick="toggleCard('card-post-all')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="endpoint-path">/forum/posts</span>
+          <span class="endpoint-summary">Ambil semua postingan forum (terbaru dulu)</span>
+          <span class="auth-tag auth-optional">optionalAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Deskripsi</div>
+            <p style="font-size:13.5px;color:var(--muted)">Mengambil semua post dari Firestore, diurutkan berdasarkan <code>createdAt</code> terbaru. Field sensitif (<code>user_uid</code>, <code>cloudinary_public_id</code>) disembunyikan. Data author <strong>tidak disertakan</strong> di endpoint ini.</p>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil mengambil seluruh postingan"</span>,
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>: <span class="s">"auto_generated_doc_id_B"</span>,
+      <span class="k">"title"</span>: <span class="s">"Bagaimana cara meredakan jerawat meradang?"</span>,
+      <span class="k">"content"</span>: <span class="s">"Saya sudah mencoba berbagai cara tapi masih merah dan perih. Ada saran?"</span>,
+      <span class="k">"image_URL"</span>: <span class="s">"https://res.cloudinary.com/coffins/image/upload/v1778927926/main-sample.png"</span>,
+      <span class="k">"tags"</span>: [<span class="s">"Acne"</span>, <span class="s">"Tips"</span>, <span class="s">"Skincare"</span>],
+      <span class="k">"upvoteCount"</span>: <span class="n">0</span>,
+      <span class="k">"downvoteCount"</span>: <span class="n">1</span>,
+      <span class="k">"commentsCount"</span>: <span class="n">1</span>,
+      <span class="k">"createdAt"</span>: <span class="s">"2025-05-20T12:00:00.000Z"</span>,
+      <span class="k">"updatedAt"</span>: <span class="s">"2025-05-20T12:00:00.000Z"</span>
+    }
+  ]
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /forum/posts/search -->
+      <div class="endpoint-card" id="card-post-search">
+        <div class="endpoint-header" onclick="toggleCard('card-post-search')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="endpoint-path">/forum/posts/search</span>
+          <span class="endpoint-summary">Cari postingan berdasarkan judul atau tag</span>
+          <span class="auth-tag auth-optional">optionalAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Query Parameters</div>
+            <table class="params-table">
+              <thead><tr><th>Parameter</th><th>Tipe</th><th>Validasi</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr><td><span class="param-name">title</span></td><td><span class="param-type">string</span></td><td><span class="optional-badge">optional</span></td><td>Filter judul (substring match, case-insensitive)</td></tr>
+                <tr><td><span class="param-name">tags</span></td><td><span class="param-type">string</span></td><td><span class="optional-badge">optional</span></td><td>Tag dipisah koma: <code>acne,tips,skincare</code> (case-insensitive, max 10 tag)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Contoh Request</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">URL</span></div>
+              <pre><span class="p">GET</span> /forum/posts/search?title=jerawat&tags=acne,tips</pre>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Deskripsi Logika Filter</div>
+            <div class="info-box info" style="margin-bottom:0">
+              <span class="info-icon">🔍</span>
+              <div>
+                <div class="info-title">Cara kerja pencarian</div>
+                <div class="info-text">
+                  Filter <code>tags</code> diproses di Firestore dengan <code>array-contains-any</code> (maks. 10 tag). Filter <code>title</code> diproses in-memory setelah data diambil. Hasil diurutkan berdasarkan <strong>net vote score</strong> (upvote - downvote) tertinggi.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil mendapatkan hasil pencarian postingan"</span>,
+  <span class="k">"data"</span>: [ <span class="c">/* array of post objects, same shape as GET /forum/posts */</span> ]
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /forum/posts/me -->
+      <div class="endpoint-card" id="card-post-me">
+        <div class="endpoint-header" onclick="toggleCard('card-post-me')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="endpoint-path">/forum/posts/me</span>
+          <span class="endpoint-summary">Ambil riwayat post milik user yang sedang login</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil mengambil riwayat postingan user"</span>,
+  <span class="k">"data"</span>: [ <span class="c">/* array of post objects (tanpa user_uid & cloudinary_public_id) */</span> ]
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /forum/posts/:id -->
+      <div class="endpoint-card" id="card-post-id">
+        <div class="endpoint-header" onclick="toggleCard('card-post-id')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:id</span></span>
+          <span class="endpoint-summary">Ambil detail satu postingan beserta info author</span>
+          <span class="auth-tag auth-optional">optionalAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Path Parameters</div>
+            <table class="params-table">
+              <thead><tr><th>Parameter</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+              <tbody>
+                <tr><td><span class="param-name">id</span></td><td><span class="param-type">string</span></td><td>Firestore document ID dari post</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil mengambil detail postingan"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>: <span class="s">"auto_generated_doc_id_B"</span>,
+    <span class="k">"title"</span>: <span class="s">"Bagaimana cara meredakan jerawat meradang?"</span>,
+    <span class="k">"content"</span>: <span class="s">"Saya sudah mencoba berbagai cara tapi masih merah dan perih. Ada saran?"</span>,
+    <span class="k">"image_URL"</span>: <span class="s">"https://res.cloudinary.com/coffins/image/upload/v1778927926/main-sample.png"</span>,
+    <span class="k">"tags"</span>: [<span class="s">"Acne"</span>, <span class="s">"Tips"</span>, <span class="s">"Skincare"</span>],
+    <span class="k">"upvoteCount"</span>: <span class="n">5</span>,
+    <span class="k">"downvoteCount"</span>: <span class="n">1</span>,
+    <span class="k">"commentsCount"</span>: <span class="n">3</span>,
+    <span class="k">"is_author"</span>: <span class="b">true</span>,  <span class="c">// true jika user yang request adalah pemilik post</span>
+    <span class="k">"author"</span>: {
+      <span class="k">"name"</span>: <span class="s">"Najwa Zakia"</span>,
+      <span class="k">"photo_URL"</span>: <span class="s">"https://lh3.googleusercontent.com/a/..."</span>
+    },
+    <span class="k">"createdAt"</span>: <span class="s">"2025-05-20T12:00:00.000Z"</span>,
+    <span class="k">"updatedAt"</span>: <span class="s">"2025-05-20T12:00:00.000Z"</span>
+  }
+}</pre>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 404 Not Found</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">404</span>,
+  <span class="k">"status"</span>: <span class="s">"failed"</span>,
+  <span class="k">"message"</span>: <span class="s">"Postingan tidak ditemukan"</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PUT /forum/posts/:id -->
+      <div class="endpoint-card" id="card-post-update">
+        <div class="endpoint-header" onclick="toggleCard('card-post-update')">
+          <span class="method-badge badge-put">PUT</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:id</span></span>
+          <span class="endpoint-summary">Update postingan (hanya pemilik)</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Path Parameters</div>
+            <table class="params-table">
+              <thead><tr><th>Parameter</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+              <tbody><tr><td><span class="param-name">id</span></td><td><span class="param-type">string</span></td><td>Firestore document ID dari post</td></tr></tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Request Body</div>
+            <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Sama persis dengan schema <code>POST /forum/posts</code> (semua field diperlukan ulang).</p>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 / 403 / 404</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON · 200 Berhasil Update</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Postingan berhasil diperbarui"</span>,
+  <span class="k">"data"</span>: <span class="b">undefined</span>
+}</pre>
+            </div>
+          </div>
+          <div class="info-box warning" style="margin-top:12px">
+            <span class="info-icon">⚠️</span>
+            <div class="info-text">Jika user bukan pemilik post, server mengembalikan <code>403 Forbidden</code> dengan pesan "Akses ditolak. User tidak memiliki wewenang untuk mengubah postingan".</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DELETE /forum/posts/:id -->
+      <div class="endpoint-card" id="card-post-delete">
+        <div class="endpoint-header" onclick="toggleCard('card-post-delete')">
+          <span class="method-badge badge-delete">DELETE</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:id</span></span>
+          <span class="endpoint-summary">Hapus postingan (hanya pemilik, gambar Cloudinary ikut terhapus)</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Deskripsi</div>
+            <p style="font-size:13.5px;color:var(--muted)">Menghapus post dari Firestore dan secara otomatis menghapus gambar terkait dari <strong>Cloudinary</strong> (jika ada). Counter <code>totalPosts</code> pada user juga didekrementasi secara atomic.</p>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Postingan berhasil dihapus"</span>,
+  <span class="k">"data"</span>: <span class="b">undefined</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         FORUM — COMMENTS
+    ══════════════════════════════════════════════════════════ -->
+    <div class="section" id="cmt-create">
+      <div class="section-title">
+        <span class="section-icon">💬</span>
+        Forum — Comments
+      </div>
+      <p class="section-desc">Komentar disimpan sebagai subcollection di bawah dokumen post di Firestore (<code>/posts/{postId}/comments</code>).</p>
+
+      <!-- POST comment -->
+      <div class="endpoint-card" id="card-cmt-create">
+        <div class="endpoint-header" onclick="toggleCard('card-cmt-create')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:postId</span>/comments</span>
+          <span class="endpoint-summary">Tambahkan komentar pada postingan</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Path Parameters</div>
+            <table class="params-table">
+              <thead><tr><th>Parameter</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+              <tbody><tr><td><span class="param-name">postId</span></td><td><span class="param-type">string</span></td><td>Firestore document ID dari post yang dikomentar</td></tr></tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Request Body (application/json)</div>
+            <table class="params-table">
+              <thead><tr><th>Field</th><th>Tipe</th><th>Validasi</th><th>Keterangan</th></tr></thead>
+              <tbody><tr><td><span class="param-name">text</span></td><td><span class="param-type">string</span></td><td><span class="required-badge">required</span> min 1</td><td>Isi komentar</td></tr></tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 201 Created</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">201</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Komentar berhasil ditambahkan"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"id"</span>: <span class="s">"auto_generated_comment_id"</span>,
+    <span class="k">"text"</span>: <span class="s">"Coba gunakan patch jerawat dan kompres dengan air dingin, kak."</span>,
+    <span class="k">"user_uid"</span>: <span class="s">"KMwMziV7NTYAvK5lvFseTWykOp1"</span>,
+    <span class="k">"createdAt"</span>: <span class="b">null</span>,
+    <span class="k">"updatedAt"</span>: <span class="b">null</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET comments -->
+      <div class="endpoint-card" id="card-cmt-get">
+        <div class="endpoint-header" onclick="toggleCard('card-cmt-get')">
+          <span class="method-badge badge-get">GET</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:postId</span>/comments</span>
+          <span class="endpoint-summary">Ambil semua komentar pada postingan + data author</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil mengambil komentar"</span>,
+  <span class="k">"data"</span>: [
+    {
+      <span class="k">"id"</span>: <span class="s">"auto_generated_comment_id"</span>,
+      <span class="k">"text"</span>: <span class="s">"Coba gunakan patch jerawat dan kompres dengan air dingin, kak."</span>,
+      <span class="k">"is_author"</span>: <span class="b">true</span>,   <span class="c">// true jika user saat ini adalah penulis komentar ini</span>
+      <span class="k">"author"</span>: {
+        <span class="k">"name"</span>: <span class="s">"Najwa Zakia"</span>,
+        <span class="k">"photo_URL"</span>: <span class="s">"https://lh3.googleusercontent.com/a/..."</span>
+      },
+      <span class="k">"createdAt"</span>: <span class="s">"2025-05-20T13:00:00.000Z"</span>,
+      <span class="k">"updatedAt"</span>: <span class="s">"2025-05-20T13:00:00.000Z"</span>
+    }
+  ]
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PUT comment -->
+      <div class="endpoint-card" id="card-cmt-update">
+        <div class="endpoint-header" onclick="toggleCard('card-cmt-update')">
+          <span class="method-badge badge-put">PUT</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:postId</span>/comments/<span class="param">:commentId</span></span>
+          <span class="endpoint-summary">Update komentar (hanya pemilik)</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Request Body</div>
+            <table class="params-table">
+              <thead><tr><th>Field</th><th>Tipe</th><th>Validasi</th><th>Keterangan</th></tr></thead>
+              <tbody><tr><td><span class="param-name">text</span></td><td><span class="param-type">string</span></td><td><span class="required-badge">required</span> min 1</td><td>Teks komentar yang baru</td></tr></tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Komentar berhasil diperbarui"</span>,
+  <span class="k">"data"</span>: {
+    <span class="k">"commentId"</span>: <span class="s">"auto_generated_comment_id"</span>,
+    <span class="k">"text"</span>: <span class="s">"Teks komentar yang baru"</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DELETE comment -->
+      <div class="endpoint-card" id="card-cmt-delete">
+        <div class="endpoint-header" onclick="toggleCard('card-cmt-delete')">
+          <span class="method-badge badge-delete">DELETE</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:postId</span>/comments/<span class="param">:commentId</span></span>
+          <span class="endpoint-summary">Hapus komentar (hanya pemilik)</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Deskripsi</div>
+            <p style="font-size:13.5px;color:var(--muted)">Menghapus komentar dan mendekrementasi counter <code>commentsCount</code> pada post secara atomic (Firestore Batch Write).</p>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">JSON</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Komentar berhasil dihapus"</span>,
+  <span class="k">"data"</span>: <span class="b">undefined</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ═══════════════════════════════════════════════════════
+         FORUM — VOTES
+    ══════════════════════════════════════════════════════════ -->
+    <div class="section" id="vote">
+      <div class="section-title">
+        <span class="section-icon">👍</span>
+        Forum — Votes
+      </div>
+      <p class="section-desc">Sistem vote toggle otomatis. Satu user hanya bisa punya satu vote aktif per post.</p>
+
+      <div class="endpoint-card" id="card-vote">
+        <div class="endpoint-header" onclick="toggleCard('card-vote')">
+          <span class="method-badge badge-post">POST</span>
+          <span class="endpoint-path">/forum/posts/<span class="param">:postId</span>/vote</span>
+          <span class="endpoint-summary">Berikan / toggle / hapus vote pada postingan</span>
+          <span class="auth-tag auth-required">requireAuth</span>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="endpoint-body">
+          <div class="body-section">
+            <div class="body-label">Logika Toggle Vote</div>
+            <div class="flow-grid">
+              <div class="flow-card">
+                <div class="flow-title">➕ Belum ada vote</div>
+                <div class="flow-desc">Vote baru ditambahkan. Counter <code>upvoteCount</code> atau <code>downvoteCount</code> diinkrementasi.</div>
+              </div>
+              <div class="flow-card">
+                <div class="flow-title">❌ Vote sama dikirim lagi</div>
+                <div class="flow-desc">Vote dihapus (netral). Counter didekrementasi kembali ke posisi semula.</div>
+              </div>
+              <div class="flow-card" style="grid-column: 1 / -1">
+                <div class="flow-title">🔄 Vote berbeda dikirim</div>
+                <div class="flow-desc">Vote diubah. Counter lama didekrementasi, counter baru diinkrementasi secara atomic.</div>
+              </div>
+            </div>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Request Body (application/json)</div>
+            <table class="params-table">
+              <thead><tr><th>Field</th><th>Tipe</th><th>Validasi</th><th>Nilai yang Valid</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td><span class="param-name">type</span></td>
+                  <td><span class="param-type">string</span></td>
+                  <td><span class="required-badge">required</span></td>
+                  <td><code>"upvote"</code> atau <code>"downvote"</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="body-section">
+            <div class="body-label">Response — 200 OK (semua skenario)</div>
+            <div class="response-tabs">
+              <button class="resp-tab active-2xx" onclick="showTab(this,'tab-v1')">Baru Vote</button>
+              <button class="resp-tab" onclick="showTab(this,'tab-v2')" style="color:var(--green);border-color:rgba(74,222,128,0.3)">Hapus Vote</button>
+              <button class="resp-tab" onclick="showTab(this,'tab-v3')" style="color:var(--yellow);border-color:rgba(251,191,36,0.3)">Ubah Vote</button>
+            </div>
+            <div id="tab-v1" class="code-block">
+              <div class="code-header"><span class="code-lang">JSON · Vote Berhasil Ditambahkan</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Berhasil melakukan upvote"</span>
+}</pre>
+            </div>
+            <div id="tab-v2" class="code-block" style="display:none">
+              <div class="code-header"><span class="code-lang">JSON · Vote Dihapus (Toggle Off)</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Vote berhasil dihapus"</span>
+}</pre>
+            </div>
+            <div id="tab-v3" class="code-block" style="display:none">
+              <div class="code-header"><span class="code-lang">JSON · Vote Diubah</span></div>
+              <pre>{
+  <span class="k">"code"</span>: <span class="n">200</span>,
+  <span class="k">"status"</span>: <span class="s">"success"</span>,
+  <span class="k">"message"</span>: <span class="s">"Vote berhasil diubah menjadi downvote"</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div style="margin-top:60px;padding:32px 0;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)">🩺 SkinSense API</div>
+      <div style="font-size:12px;color:var(--muted2);font-family:'JetBrains Mono',monospace">v1.0.0 · Node.js + Express · Firebase + Cloudinary + Gemini AI</div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function toggleCard(id) {
+    const card = document.getElementById(id);
+    card.classList.toggle('open');
+  }
+
+  function showTab(btn, tabId) {
+    const container = btn.closest('.body-section');
+    container.querySelectorAll('.resp-tab').forEach(b => {
+      b.className = 'resp-tab';
+    });
+    btn.classList.add(tabId.includes('4') || tabId.endsWith('401') ? 'active-4xx' : 'active-2xx');
+
+    container.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+    const tab = document.getElementById(tabId);
+    if (tab) tab.style.display = 'block';
+  }
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  // Highlight active nav on scroll
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('.nav-item');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
